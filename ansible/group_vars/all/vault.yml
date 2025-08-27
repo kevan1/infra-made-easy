@@ -1,0 +1,33 @@
+# Este archivo debe ser encriptado con ansible-vault
+# Usa: ansible-vault create group_vars/all/vault.yml
+# o:   ansible-vault encrypt group_vars/all/vault.yml
+
+# Ejemplo de variables sensibles que podrías necesitar:
+
+# Claves de API para servicios
+# aws_access_key: "tu_access_key_aqui"
+# aws_secret_key: "tu_secret_key_aqui"
+
+# Contraseñas de bases de datos
+# db_password: "contraseña_super_secreta"
+# mysql_root_password: "otra_contraseña_secreta"
+
+# Certificados SSL/TLS
+# ssl_certificate_key: |
+#   -----BEGIN PRIVATE KEY-----
+#   tu_clave_privada_aqui
+#   -----END PRIVATE KEY-----
+
+# Tokens de autenticación
+# github_token: "ghp_token_aqui"
+# docker_hub_token: "tu_token_docker"
+
+# Configuraciones de servicios externos
+# datadog_api_key: "tu_api_key_datadog"
+# newrelic_license_key: "tu_license_key_newrelic"
+
+# IMPORTANTE: 
+# - Este archivo debe estar encriptado antes de hacer commit al repositorio
+# - Nunca subas este archivo sin encriptar al control de versiones
+# - Usa contraseñas fuertes para el vault
+# - Considera usar diferentes vaults para diferentes entornos (dev, staging, prod)

@@ -1,0 +1,130 @@
+---
+- name: Instalar Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+  tags:
+    - nginx
+    - packages
+
+- name: Crear directorios necesarios para Nginx
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  loop:
+    - /var/www/html
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled
+    - /var/log/nginx
+  tags:
+    - nginx
+    - directories
+
+- name: Configurar Nginx - archivo principal
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify:
+    - restart nginx
+  tags:
+    - nginx
+    - config
+
+- name: Configurar sitio web por defecto
+  template:
+    src: default_site.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - reload nginx
+  tags:
+    - nginx
+    - config
+
+- name: Habilitar sitio por defecto
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  notify:
+    - reload nginx
+  tags:
+    - nginx
+    - config
+
+- name: Crear página de inicio personalizada
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  tags:
+    - nginx
+    - content
+
+- name: Configurar logrotate para Nginx
+  template:
+    src: nginx_logrotate.j2
+    dest: /etc/logrotate.d/nginx
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - nginx
+    - logging
+
+- name: Verificar configuración de Nginx
+  command: nginx -t
+  register: nginx_syntax
+  changed_when: false
+  failed_when: nginx_syntax.rc != 0
+  tags:
+    - nginx
+    - validation
+
+- name: Asegurarse de que Nginx esté iniciado y habilitado
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  tags:
+    - nginx
+    - services
+
+- name: Configurar monitoreo básico de Nginx
+  template:
+    src: nginx_status.conf.j2
+    dest: /etc/nginx/sites-available/nginx_status
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - reload nginx
+  when: enable_nginx_status | default(false)
+  tags:
+    - nginx
+    - monitoring
+
+- name: Habilitar monitoreo de Nginx si está configurado
+  file:
+    src: /etc/nginx/sites-available/nginx_status
+    dest: /etc/nginx/sites-enabled/nginx_status
+    state: link
+  notify:
+    - reload nginx
+  when: enable_nginx_status | default(false)
+  tags:
+    - nginx
+    - monitoring
