@@ -91,7 +91,7 @@ infra-made-easy/
 ### 1. 📥 Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/infra-made-easy.git
+git clone https://github.com/SOLx-AR/infra-made-easy.git
 cd infra-made-easy
 ```
 
@@ -126,9 +126,9 @@ export AWS_DEFAULT_REGION="us-east-1"
 ### 4. 🖥️ Lanzar Instancia EC2
 
 Crea una instancia EC2 con las siguientes características:
-- **AMI**: Ubuntu 20.04 LTS o superior
+- **AMI**: Ubuntu 22.04 LTS o superior
 - **Tipo**: t2.micro (elegible para free tier)
-- **Security Group**: Permitir puertos 22 (SSH) y 80 (HTTP)
+- **Security Group**: Permitir puertos 22 (SSH) , 80 (HTTP) y 443 (HTTPS)
 - **Key Pair**: Usar tu par de claves SSH
 
 ### 5. 📝 Configurar Inventario
