@@ -182,7 +182,10 @@ aws sts get-caller-identity
 # 5. Instalar colecciones Ansible necesarias
 ansible-galaxy install -r requirements.yml
 
-# 6. (OPCIONAL) Para sesiones futuras, usa el script de activación rápida
+# 6. Verificar que todo esté configurado correctamente
+./verify-setup.sh
+
+# 7. (OPCIONAL) Para sesiones futuras, usa el script de activación rápida
 ./activate-env.sh
 ```
 
@@ -298,29 +301,30 @@ infra-made-easy/
 ├── 📦 requirements.txt          # 🐍 Dependencias Python
 ├── 📦 requirements.yml          # 📦 Colecciones Ansible
 ├── 🚀 activate-env.sh           # 🔧 Script de activación del entorno
+├── 🔍 verify-setup.sh           # 🔍 Script de verificación del entorno
+├── ⚙️ ansible.cfg               # ⚙️ Configuración de Ansible
 ├── 📁 venv-ansible/             # 🐍 Entorno virtual Python
-├── 🤖 ansible/                  # 🔧 Automatización
-│   ├── inventory.yml        # 🗺️ Inventario de servidores
-│   ├── ansible.cfg          # ⚙️ Configuración
-│   ├── group_vars/          # 📁 Variables por equipo
-│   │   ├── all/main.yml
-│   │   ├── monitoring_servers/main.yml
-│   │   ├── webserver_ssl_servers/main.yml
-│   │   ├── security_servers/main.yml
-│   │   ├── cicd_servers/main.yml
-│   │   └── traefik_servers/main.yml
-│   └── roles/               # 🧾 ROLES ULTRA MODULARES
-│       ├── common/          # 🔧 Base + usuarios
-│       ├── nginx/           # 🌐 Servidor web
-│       ├── docker/          # 🐳 Contenedores
-│       ├── prometheus/      # 📊 Métricas
-│       ├── grafana/         # 📈 Dashboards
-│       ├── letsencrypt/     # 🔒 SSL
-│       ├── lynis/           # 🔍 Auditoría
-│       ├── fail2ban/        # 🛡️ Protección
-│       ├── jenkins/         # 🎨 CI/CD
-│       ├── traefik/         # ⚙️ Load balancer
-│       └── node-exporter/   # 🖥️ Métricas sistema
+├── 📋 inventory/                # 🗺️ Inventario de servidores
+│   ├── hosts                # 📝 Archivo de hosts
+│   └── group_vars/          # 📁 Variables por equipo
+│       ├── all/main.yml
+│       ├── monitoring_servers/main.yml
+│       ├── webserver_ssl_servers/main.yml
+│       ├── security_servers/main.yml
+│       ├── cicd_servers/main.yml
+│       └── traefik_servers/main.yml
+├── 🧾 roles/                    # 🧾 ROLES ULTRA MODULARES
+│   ├── common/              # 🔧 Base + usuarios
+│   ├── nginx/               # 🌐 Servidor web
+│   ├── docker/              # 🐳 Contenedores
+│   ├── prometheus/          # 📊 Métricas
+│   ├── grafana/             # 📈 Dashboards
+│   ├── letsencrypt/         # 🔒 SSL
+│   ├── lynis/               # 🔍 Auditoría
+│   ├── fail2ban/            # 🛡️ Protección
+│   ├── jenkins/             # 🎨 CI/CD
+│   ├── traefik/             # ⚙️ Load balancer
+│   └── node-exporter/       # 🖥️ Métricas sistema
 ├── 🎯 etapa1-webserver-basico.yml # Playbook individual
 ├── 🤝 setup-monitoring.yml      # Equipo 1
 ├── 🤝 setup-webserver-ssl.yml   # Equipo 2
