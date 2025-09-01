@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Documentación del Curso
+    url: https://github.com/SOLx-AR/infra-made-easy/blob/main/README.md
+    about: Lee la documentación completa antes de reportar problemas
+  - name: 🏗️ Arquitectura Modular
+    url: https://github.com/SOLx-AR/infra-made-easy/blob/main/docs/ARQUITECTURA-MODULAR.md
+    about: Entiende cómo están organizados los roles y la infraestructura
+  - name: 🎯 Guía Etapa 1
+    url: https://github.com/SOLx-AR/infra-made-easy/blob/main/docs/ETAPA1.md
+    about: Instrucciones detalladas para completar tu servidor individual
+  - name: 🤝 Guía Etapa 2
+    url: https://github.com/SOLx-AR/infra-made-easy/blob/main/docs/ETAPA2.md
+    about: Información sobre equipos colaborativos y especialización
