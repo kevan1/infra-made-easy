@@ -1,0 +1,40 @@
+# 🐍 Dependencias Python para Curso "Infra Made Easy"
+# Herramientas necesarias para gestión de infraestructura
+
+# Ansible - Herramienta principal de automatización
+ansible>=8.0.0
+ansible-core>=2.15.0
+
+# Utilidades para Ansible
+ansible-lint>=6.0.0
+ansible-runner>=2.3.0
+
+# Herramientas de Docker
+docker>=6.1.0
+docker-compose>=1.29.0
+
+# Utilidades de red y testing
+netaddr>=0.8.0
+jmespath>=1.0.0
+paramiko>=3.0.0
+
+# Herramientas de desarrollo y linting
+yamllint>=1.32.0
+jinja2>=3.1.0
+cryptography>=41.0.0
+
+# Utilidades para gestión de secretos y configuración
+passlib>=1.7.4
+bcrypt>=4.0.0
+
+# Herramientas de monitoreo y logging
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Desarrollo y testing
+pytest>=7.4.0
+molecule>=6.0.0
+
+# Formateo y calidad de código
+black>=23.0.0
+isort>=5.12.0
