@@ -1,9 +1,9 @@
 ---
-# 👥 GESTIÓN DE USUARIOS - Ultra modular basado en users.yml
-- name: "📋 Cargar configuración de usuarios"
+# GESTIÓN DE USUARIOS - Ultra modular basado en users.yml
+- name: "Cargar configuración de usuarios"
   include_vars: "{{ playbook_dir }}/users.yml"
 
-- name: "👤 Crear usuarios según permisos para este servidor"
+- name: "Crear usuarios según permisos para este servidor"
   user:
     name: "{{ item.key }}"
     comment: "{{ item.value.full_name }}"
@@ -27,7 +27,7 @@
     - item.value.permissions[server_type] is defined
     - item.value.permissions[server_type] | length > 0
 
-- name: "🔑 Configurar claves SSH públicas"
+- name: "Configurar claves SSH públicas"
   authorized_key:
     user: "{{ item.key }}"
     key: "{{ item.value.ssh_public_key }}"
@@ -41,7 +41,7 @@
     - item.value.permissions[server_type] | length > 0
   ignore_errors: yes
 
-- name: "🔐 Configurar sudo sin contraseña para usuarios autorizados"
+- name: "Configurar sudo sin contraseña para usuarios autorizados"
   lineinfile:
     path: /etc/sudoers.d/curso-infra-users
     line: "{{ item.key }} ALL=(ALL) NOPASSWD:ALL"
@@ -56,10 +56,10 @@
     - item.value.permissions[server_type] is defined
     - "'sudo' in user_permissions"
 
-- name: "📊 Mostrar resumen de usuarios configurados"
+- name: "Mostrar resumen de usuarios configurados"
   debug:
     msg: 
-      - "👥 Usuarios configurados en {{ group_names[0] }}:"
+      - "Usuarios configurados en {{ group_names[0] }}:"
       - "{{ configured_users | join(', ') }}"
   vars:
     server_type: "{{ group_names[0] }}"

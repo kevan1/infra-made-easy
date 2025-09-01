@@ -1,18 +1,18 @@
 ---
-# 📈 EQUIPO MONITOREO - Stack Prometheus + Grafana (Ultra Modular)
-- name: "📈 ETAPA 2 - Configurar Stack de Monitoreo"
+# EQUIPO MONITOREO - Stack Prometheus + Grafana (Ultra Modular)
+- name: "ETAPA 2 - Configurar Stack de Monitoreo"
   hosts: monitoring_servers
   become: yes
   
   pre_tasks:
-    - name: "📦 Actualizar paquetes del sistema"
+    - name: "Actualizar paquetes del sistema"
       apt:
         update_cache: yes
         upgrade: yes
         
   roles:
-    - common           # 🔧 Configuración base + usuarios
-    - docker          # 🐳 Docker para contenedores
-    - prometheus      # 📊 Sistema de métricas
-    - grafana         # 📈 Dashboards y visualización
-    - node-exporter   # 🖥️ Métricas del sistema
+    - common           # Configuración base + usuarios
+    - docker          # Docker para contenedores
+    - prometheus      # Sistema de métricas
+    - grafana         # Dashboards y visualización
+    - node-exporter   # Métricas del sistema

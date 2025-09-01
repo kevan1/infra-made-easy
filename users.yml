@@ -1,8 +1,8 @@
-# 👥 USUARIOS DEL CURSO - Configuración Centralizada
+# USUARIOS DEL CURSO - Configuración Centralizada
 # Archivo central que define todos los usuarios, sus claves SSH públicas y permisos
 
 users:
-  # 👤 Usuario: Juan
+  # Usuario: Juan
   juan:
     full_name: "Juan Pérez"
     email: "juan@curso-infra.com"
@@ -25,7 +25,7 @@ users:
       traefik_servers:
         - read_config
 
-  # 👤 Usuario: María  
+  # Usuario: María  
   maria:
     full_name: "María González"
     email: "maria@curso-infra.com"
@@ -49,7 +49,7 @@ users:
       cicd_servers:
         - read_pipelines
 
-  # 👤 Usuario: Pedro
+  # Usuario: Pedro
   pedro:
     full_name: "Pedro Rodríguez" 
     email: "pedro@curso-infra.com"
@@ -72,7 +72,7 @@ users:
       cicd_servers:
         - security_integration
 
-# 🔐 DEFINICIÓN DE PERMISOS
+# DEFINICIÓN DE PERMISOS
 # Explicación de qué significa cada permiso
 
 permission_definitions:
@@ -91,7 +91,7 @@ permission_definitions:
   read_config: "Solo lectura de configuraciones"
   security_integration: "Puede integrar security checks en pipelines"
 
-# 👥 EQUIPOS Y SUS ROLES
+# EQUIPOS Y SUS ROLES
 team_roles:
   monitoring:
     description: "Vigilar salud de toda la infraestructura"
