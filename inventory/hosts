@@ -7,34 +7,36 @@
 
 # 📈 SERVIDORES DE MONITOREO
 [monitoring_servers]
-monitoring1 ansible_host=127.0.0.1 server_name=prometheus-grafana-1
-monitoring2 ansible_host=127.0.0.1 server_name=prometheus-grafana-2
+#monitoring1 ansible_host=127.0.0.1 server_name=prometheus-grafana-1
+#monitoring2 ansible_host=127.0.0.1 server_name=prometheus-grafana-2
 
 # 🌍 SERVIDORES WEB + SSL
 [webserver_ssl_servers]
-webssl1 ansible_host=127.0.0.1 server_name=nginx-ssl-1 domain=web1.curso-infra.com
-webssl2 ansible_host=127.0.0.1 server_name=nginx-ssl-2 domain=web2.curso-infra.com
-webssl3 ansible_host=127.0.0.1 server_name=nginx-ssl-3 domain=web3.curso-infra.com
+#webssl1 ansible_host=127.0.0.1 server_name=nginx-ssl-1 domain=web1.curso-infra.com
+#webssl2 ansible_host=127.0.0.1 server_name=nginx-ssl-2 domain=web2.curso-infra.com
+#webssl3 ansible_host=127.0.0.1 server_name=nginx-ssl-3 domain=web3.curso-infra.com
 
 # 🔒 SERVIDORES DE SEGURIDAD
 [security_servers]
-security1 ansible_host=127.0.0.1 server_name=lynis-security-1
+#security1 ansible_host=127.0.0.1 server_name=lynis-security-1
 
 # 🔄 SERVIDORES CI/CD
 [cicd_servers]
-cicd1 ansible_host=127.0.0.1 server_name=jenkins-cicd-1
-cicd2 ansible_host=127.0.0.1 server_name=jenkins-cicd-2
+#cicd1 ansible_host=127.0.0.1 server_name=jenkins-cicd-1
+#cicd2 ansible_host=127.0.0.1 server_name=jenkins-cicd-2
 
 # ⚙️ SERVIDORES TRAEFIK
 [traefik_servers]
-traefik1 ansible_host=127.0.0.1 server_name=traefik-lb-1
+#traefik1 ansible_host=127.0.0.1 server_name=traefik-lb-1
 
 # 🎯 SERVIDORES INDIVIDUALES ESTUDIANTES
 [student_servers]
-my-server ansible_host=127.0.0.1 student_name=estudiante
+server-f0x17 ansible_host=34.122.207.0 student_name=f0x17
+
 # Cada estudiante puede agregar su servidor individual aquí:
 # juan-server ansible_host=1.2.3.4 student_name=juan
 # maria-server ansible_host=5.6.7.8 student_name=maria
+
 
 # ========================
 # 🏗️ GRUPOS FUNCIONALES
