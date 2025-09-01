@@ -1,0 +1,26 @@
+---
+# 🖥️ NODE-EXPORTER - Configuración por defecto
+node_exporter:
+  # 🔧 Versión
+  version: "1.6.1"
+  port: 9100
+  
+  # 🔧 Colectores habilitados
+  collectors:
+    - cpu
+    - diskstats
+    - filesystem
+    - loadavg
+    - meminfo
+    - netdev
+    - netstat
+    - stat
+    - time
+    - uname
+    - vmstat
+  
+  # 🔐 Seguridad
+  allowed_ips: []  # Vacío = permite desde cualquier IP
+  
+  # ⚙️ Opciones adicionales
+  extra_args: []

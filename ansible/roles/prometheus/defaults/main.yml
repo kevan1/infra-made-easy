@@ -1,0 +1,37 @@
+---
+# 📊 PROMETHEUS - Configuración por defecto
+prometheus:
+  # 🔧 Versión y básicos
+  version: "2.45.0"
+  port: 9090
+  
+  # 📁 Directorios
+  config_dir: "/etc/prometheus"
+  data_dir: "/var/lib/prometheus"
+  rules_dir: "/etc/prometheus/rules"
+  
+  # ⏱️ Configuración de scraping
+  scrape_interval: "15s"
+  evaluation_interval: "15s"
+  
+  # 💾 Retención de datos
+  retention_time: "30d"
+  retention_size: "10GB"
+  
+  # 🎯 Targets por defecto
+  scrape_configs:
+    - job_name: "prometheus"
+      static_configs:
+        - targets: ["localhost:9090"]
+        
+    - job_name: "node-exporter"
+      static_configs:
+        - targets: ["localhost:9100"]
+  
+  # 🚨 Configuración de alertas
+  enable_alertmanager: false
+  alertmanager_url: "localhost:9093"
+  
+  # 🔐 Seguridad
+  enable_admin_api: false
+  enable_lifecycle: true

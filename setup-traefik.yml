@@ -1,5 +1,5 @@
 ---
-# ⚙️ EQUIPO TRAEFIK + ACME - Load balancer y certificados automáticos
+# ⚙️ EQUIPO TRAEFIK + ACME - Load balancer y ACME (Ultra Modular)
 - name: "⚙️ ETAPA 2 - Configurar Traefik Load Balancer"
   hosts: traefik_servers
   become: yes
@@ -11,5 +11,7 @@
         upgrade: yes
         
   roles:
-    - common
-    - traefik
+    - common         # 🔧 Configuración base + usuarios
+    - docker         # 🐳 Docker para Traefik
+    - traefik        # 🔄 Load balancer y proxy
+    - node-exporter  # 🖥️ Métricas para monitoreo

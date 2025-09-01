@@ -1,0 +1,11 @@
+---
+# 🐳 DOCKER HANDLERS
+- name: restart docker
+  systemd:
+    name: docker
+    state: restarted
+
+- name: reload docker
+  systemd:
+    name: docker
+    state: reloaded

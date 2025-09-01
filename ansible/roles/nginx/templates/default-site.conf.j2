@@ -1,0 +1,59 @@
+server {
+    listen {{ nginx.http_port }};
+    listen [::]:{{ nginx.http_port }};
+    
+{% if domains is defined and domains | length > 0 %}
+    server_name {{ domains | join(' ') }};
+{% else %}
+    server_name _;
+{% endif %}
+    
+    root {{ nginx.document_root }};
+    index {{ nginx.index_files | join(' ') }};
+    
+    # Security headers
+{% for header, value in nginx.security_headers.items() %}
+    add_header {{ header | replace('_', '-') | title }} "{{ value }}" always;
+{% endfor %}
+    
+    # Performance optimizations
+{% if nginx.enable_gzip %}
+    gzip on;
+    gzip_vary on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+{% endif %}
+    
+    client_max_body_size {{ nginx.client_max_body_size }};
+    keepalive_timeout {{ nginx.keepalive_timeout }};
+    
+{% if not nginx.enable_server_tokens %}
+    server_tokens off;
+{% endif %}
+    
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    
+{% if nginx.enable_status_page %}
+    # Status page for monitoring
+    location {{ nginx.status_page_path }} {
+        stub_status on;
+        access_log off;
+        allow 127.0.0.1;
+{% if monitoring_allowed_ips is defined %}
+{% for ip in monitoring_allowed_ips %}
+        allow {{ ip }};
+{% endfor %}
+{% endif %}
+        deny all;
+    }
+{% endif %}
+    
+    # Error pages
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}

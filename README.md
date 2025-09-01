@@ -239,35 +239,61 @@ graph TB
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Estructura del Proyecto (Ultra Modular)
 
 ```
 infra-made-easy/
-├── 👥 users/                    # 🎯 Directorio de estudiantes
-│   ├── juan/
-│   │   └── id_rsa.pub       # Clave SSH pública
-│   ├── maria/
-│   └── pedro/
-├── 🗺️ teams/                    # 🤝 Configuración de equipos
-│   ├── monitoring.yml       # Equipo 1
-│   ├── webserver-ssl.yml    # Equipo 2  
-│   ├── security-lynis.yml   # Equipo 3
-│   ├── cicd.yml             # Equipo 4
-│   └── traefik-acme.yml     # Equipo 5
-├── 🤖 ansible/                  # Automatización
-│   ├── inventory.yml        # Inventario de servidores
-│   ├── ansible.cfg          # Configuración
-│   └── playbooks/           # Playbooks por etapa
-│       ├── 🎯 etapa1-webserver-basico.yml
-│       └── 🤝 etapa2/
-│           ├── setup-monitoring.yml
-│           ├── setup-webserver-ssl.yml
-│           ├── setup-security-lynis.yml
-│           ├── setup-cicd.yml
-│           └── setup-traefik-acme.yml
-└── 📄 docs/                    # Documentación del curso
+├── 👥 users/                     # 🎯 Directorio de estudiantes
+│   ├── juan/id_rsa.pub
+│   ├── maria/id_rsa.pub
+│   └── pedro/id_rsa.pub
+├── 👥 users.yml                 # 🔑 Configuración centralizada de usuarios
+├── 🤖 ansible/                  # 🔧 Automatización
+│   ├── inventory.yml        # 🗺️ Inventario de servidores
+│   ├── ansible.cfg          # ⚙️ Configuración
+│   ├── group_vars/          # 📁 Variables por equipo
+│   │   ├── all/main.yml
+│   │   ├── monitoring_servers/main.yml
+│   │   ├── webserver_ssl_servers/main.yml
+│   │   ├── security_servers/main.yml
+│   │   ├── cicd_servers/main.yml
+│   │   └── traefik_servers/main.yml
+│   └── roles/               # 🧾 ROLES ULTRA MODULARES
+│       ├── common/          # 🔧 Base + usuarios
+│       ├── nginx/           # 🌐 Servidor web
+│       ├── docker/          # 🐳 Contenedores
+│       ├── prometheus/      # 📊 Métricas
+│       ├── grafana/         # 📈 Dashboards
+│       ├── letsencrypt/     # 🔒 SSL
+│       ├── lynis/           # 🔍 Auditoría
+│       ├── fail2ban/        # 🛡️ Protección
+│       ├── jenkins/         # 🎨 CI/CD
+│       ├── traefik/         # ⚙️ Load balancer
+│       └── node-exporter/   # 🖥️ Métricas sistema
+├── 🎯 etapa1-webserver-basico.yml # Playbook individual
+├── 🤝 setup-monitoring.yml      # Equipo 1
+├── 🤝 setup-webserver-ssl.yml   # Equipo 2
+├── 🤝 setup-security.yml        # Equipo 3
+├── 🤝 setup-cicd.yml            # Equipo 4
+├── 🤝 setup-traefik.yml         # Equipo 5
+└── 📄 docs/                    # Documentación
     ├── ETAPA1.md
-    └── ETAPA2.md
+    ├── ETAPA2.md
+    └── ARQUITECTURA-MODULAR.md
 ```
+
+### 🧾 **Roles Ultra Modulares**
+Cada aplicación tiene su **propio role independiente**:
+- 🔧 **common**: Usuarios + configuración base
+- 🌐 **nginx**: Servidor web optimizado
+- 🐳 **docker**: Contenedores y compose
+- 📊 **prometheus**: Sistema de métricas
+- 📈 **grafana**: Dashboards y alertas
+- 🔒 **letsencrypt**: Certificados SSL
+- 🔍 **lynis**: Auditoría de seguridad
+- 🛡️ **fail2ban**: Protección anti-ataques
+- 🎨 **jenkins**: CI/CD y automatización
+- ⚙️ **traefik**: Load balancer y proxy
+- 🖥️ **node-exporter**: Métricas del sistema
 
 ---

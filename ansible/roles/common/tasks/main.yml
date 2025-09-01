@@ -1,23 +1,11 @@
 ---
 # 🔧 ROLE COMMON - Configuración base para todos los servidores
-- name: "📦 Actualizar cache de paquetes"
+- name: "🔧 Instalar paquetes básicos del sistema"
   apt:
-    update_cache: yes
-    cache_valid_time: 3600
-
-- name: "🔧 Instalar paquetes básicos"
-  apt:
-    name:
-      - curl
-      - wget
-      - vim
-      - htop
-      - git
-      - ufw
-      - unzip
+    name: "{{ common_packages }}"
     state: present
 
-- name: "👥 Crear usuarios del sistema"
+- name: "👥 Gestionar usuarios del sistema"
   include_tasks: users.yml
 
 - name: "🔥 Configurar firewall básico"
@@ -29,8 +17,17 @@
 - name: "🔓 Permitir SSH"
   ufw:
     rule: allow
-    port: "22"
+    port: "{{ security_settings.ssh_port }}"
 
 - name: "⏰ Configurar timezone"
   timezone:
-    name: "{{ system_timezone | default('UTC') }}"
+    name: "{{ system_timezone }}"
+
+- name: "📋 Configurar logrotate"
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.d/curso-infra
+    owner: root
+    group: root
+    mode: '0644'
+  when: logging_config.enable_logrotate

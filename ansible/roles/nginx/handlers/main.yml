@@ -1,5 +1,5 @@
 ---
-# 🌍 HANDLERS PARA WEBSERVER-SSL
+# 🌐 NGINX HANDLERS
 - name: restart nginx
   systemd:
     name: nginx
@@ -9,3 +9,6 @@
   systemd:
     name: nginx
     state: reloaded
+
+- name: nginx config test
+  command: nginx -t

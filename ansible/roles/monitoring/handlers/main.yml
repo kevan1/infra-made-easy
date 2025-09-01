@@ -1,6 +1,0 @@
----
-# 📈 HANDLERS PARA MONITORING
-- name: restart monitoring stack
-  docker_compose:
-    project_src: /opt/monitoring
-    restarted: yes

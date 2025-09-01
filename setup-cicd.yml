@@ -1,5 +1,5 @@
 ---
-# 🔄 EQUIPO CI/CD - Setup Jenkins y automatización
+# 🔄 EQUIPO CI/CD - Jenkins y automatización (Ultra Modular)
 - name: "🔄 ETAPA 2 - Configurar Pipeline CI/CD"
   hosts: cicd_servers
   become: yes
@@ -11,5 +11,7 @@
         upgrade: yes
         
   roles:
-    - common
-    - cicd
+    - common         # 🔧 Configuración base + usuarios
+    - docker         # 🐳 Docker para CI/CD
+    - jenkins        # 🎨 Automatización y pipelines
+    - node-exporter  # 🖥️ Métricas para monitoreo

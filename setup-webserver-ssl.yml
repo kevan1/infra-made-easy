@@ -1,5 +1,5 @@
 ---
-# 🌍 EQUIPO WEBSERVER + SSL - Setup Nginx con SSL y dominios
+# 🌍 EQUIPO WEBSERVER + SSL - Nginx con SSL y dominios (Ultra Modular)
 - name: "🌍 ETAPA 2 - Configurar Webserver con SSL"
   hosts: webserver_ssl_servers
   become: yes
@@ -11,5 +11,7 @@
         upgrade: yes
         
   roles:
-    - common
-    - webserver-ssl
+    - common         # 🔧 Configuración base + usuarios
+    - nginx          # 🌐 Servidor web
+    - letsencrypt    # 🔒 Certificados SSL
+    - node-exporter  # 🖥️ Métricas para monitoreo

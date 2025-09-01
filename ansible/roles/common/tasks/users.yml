@@ -1,26 +1,27 @@
 ---
-# 👥 GESTIÓN DE USUARIOS - Basado en users.yml y permisos por servidor
+# 👥 GESTIÓN DE USUARIOS - Ultra modular basado en users.yml
 - name: "📋 Cargar configuración de usuarios"
   include_vars: "{{ playbook_dir }}/users.yml"
 
-- name: "👤 Crear usuarios según sus permisos para este tipo de servidor"
+- name: "👤 Crear usuarios según permisos para este servidor"
   user:
     name: "{{ item.key }}"
     comment: "{{ item.value.full_name }}"
-    groups: "{{ user_groups }}"
+    groups: "{{ calculated_groups | join(',') }}"
     shell: /bin/bash
     create_home: yes
+    append: yes
   loop: "{{ users | dict2items }}"
   vars:
-    # Determinar grupos según permisos del usuario en este tipo de servidor
-    server_type: "{{ group_names[0] }}"  # Primer grupo del inventario
+    server_type: "{{ group_names[0] }}"
     user_permissions: "{{ item.value.permissions[server_type] | default([]) }}"
-    user_groups: >-
-      {{ 
+    calculated_groups: >-
+      {{
         (['sudo'] if 'sudo' in user_permissions else []) +
         (['docker'] if 'docker' in user_permissions else []) +
         (['www-data'] if 'www-data' in user_permissions else []) +
-        (['jenkins'] if 'jenkins' in user_permissions else [])
+        (['jenkins'] if 'jenkins' in user_permissions else []) +
+        (['security'] if 'security_tools' in user_permissions else [])
       }}
   when: 
     - item.value.permissions[server_type] is defined
@@ -30,7 +31,8 @@
   authorized_key:
     user: "{{ item.key }}"
     key: "{{ item.value.ssh_public_key }}"
-    comment: "{{ item.value.email }}"
+    comment: "{{ item.value.email }} - {{ item.value.full_name }}"
+    state: present
   loop: "{{ users | dict2items }}"
   vars:
     server_type: "{{ group_names[0] }}"
@@ -39,12 +41,32 @@
     - item.value.permissions[server_type] | length > 0
   ignore_errors: yes
 
-- name: "📋 Mostrar usuarios configurados"
-  debug:
-    msg: "👤 Usuario configurado: {{ item.key }} ({{ item.value.full_name }}) en servidor tipo {{ group_names[0] }}"
+- name: "🔐 Configurar sudo sin contraseña para usuarios autorizados"
+  lineinfile:
+    path: /etc/sudoers.d/curso-infra-users
+    line: "{{ item.key }} ALL=(ALL) NOPASSWD:ALL"
+    create: yes
+    mode: '0440'
+    validate: 'visudo -cf %s'
   loop: "{{ users | dict2items }}"
   vars:
     server_type: "{{ group_names[0] }}"
+    user_permissions: "{{ item.value.permissions[server_type] | default([]) }}"
   when: 
     - item.value.permissions[server_type] is defined
-    - item.value.permissions[server_type] | length > 0
+    - "'sudo' in user_permissions"
+
+- name: "📊 Mostrar resumen de usuarios configurados"
+  debug:
+    msg: 
+      - "👥 Usuarios configurados en {{ group_names[0] }}:"
+      - "{{ configured_users | join(', ') }}"
+  vars:
+    server_type: "{{ group_names[0] }}"
+    configured_users: >-
+      {{
+        users | dict2items 
+        | selectattr('value.permissions.' + server_type, 'defined')
+        | map(attribute='key') 
+        | list
+      }}

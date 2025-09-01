@@ -1,0 +1,29 @@
+---
+# 🐳 DOCKER - Configuración por defecto
+docker:
+  # 📦 Instalación
+  install_compose: true
+  install_buildx: false
+  
+  # 👥 Usuarios con acceso a Docker
+  users: []
+  
+  # ⚙️ Configuración personalizada
+  custom_config: false
+  log_driver: "json-file"
+  log_max_size: "10m"
+  log_max_file: "3"
+  
+  # 🌐 Red
+  bridge_ip: "172.17.0.1"
+  enable_experimental: false
+  
+  # 🔓 Firewall
+  firewall_ports: []
+  
+  # 🧹 Limpieza automática
+  enable_auto_cleanup: true
+  
+  # 📊 Métricas
+  enable_metrics: false
+  metrics_address: "127.0.0.1:9323"
