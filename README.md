@@ -181,6 +181,9 @@ aws sts get-caller-identity
 
 # 5. Instalar colecciones Ansible necesarias
 ansible-galaxy install -r requirements.yml
+
+# 6. (OPCIONAL) Para sesiones futuras, usa el script de activación rápida
+./activate-env.sh
 ```
 
 ### 2️⃣ Agregar tu Usuario al Proyecto
@@ -294,6 +297,8 @@ infra-made-easy/
 ├── 👥 users.yml                 # 🔑 Configuración centralizada de usuarios
 ├── 📦 requirements.txt          # 🐍 Dependencias Python
 ├── 📦 requirements.yml          # 📦 Colecciones Ansible
+├── 🚀 activate-env.sh           # 🔧 Script de activación del entorno
+├── 📁 venv-ansible/             # 🐍 Entorno virtual Python
 ├── 🤖 ansible/                  # 🔧 Automatización
 │   ├── inventory.yml        # 🗺️ Inventario de servidores
 │   ├── ansible.cfg          # ⚙️ Configuración

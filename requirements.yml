@@ -18,7 +18,3 @@ collections:
   # Módulos de criptografía para SSL/TLS (roles: nginx, letsencrypt, traefik)
   - name: community.crypto
     version: ">=2.0.0"
-    
-  # Módulos para manejo de archivos y plantillas (todos los roles)
-  - name: ansible.builtin
-    version: ">=2.0.0"
