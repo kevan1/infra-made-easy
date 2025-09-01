@@ -7,10 +7,7 @@ admin_users:
     email: nico@solx.ar
     groups:
       - sudo
-      - ssh-access
-      - docker
       - adm
-      - systemd-journal
     authorized_keys:
       - name: nico
         key: "{{ lookup('file', 'users/nico/id_rsa.pub') }}"
