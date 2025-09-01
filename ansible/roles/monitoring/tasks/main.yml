@@ -1,0 +1,67 @@
+---
+# 📈 ROLE MONITORING - Configuración de stack de monitoreo
+- name: "🐳 Instalar Docker y Docker Compose"
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+
+- name: "🚀 Configurar y iniciar Docker"
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "📁 Crear directorio de monitoreo"
+  file:
+    path: /opt/monitoring
+    state: directory
+    owner: root
+    group: docker
+    mode: '0755'
+
+- name: "⚙️ Configurar Prometheus"
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/monitoring/prometheus.yml
+    owner: root
+    group: docker
+    mode: '0644'
+  notify: restart monitoring stack
+
+- name: "🐳 Configurar Docker Compose"
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/monitoring/docker-compose.yml
+    owner: root
+    group: docker
+    mode: '0644'
+  notify: restart monitoring stack
+
+- name: "🚀 Levantar stack de monitoreo"
+  docker_compose:
+    project_src: /opt/monitoring
+    state: present
+
+- name: "🔓 Configurar firewall para monitoreo"
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop: "{{ firewall_ports }}"
+
+- name: "📊 Crear dashboard web del equipo"
+  template:
+    src: monitoring-dashboard.html.j2
+    dest: /var/www/html/monitoring-dashboard.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: "📈 Mostrar información de configuración"
+  debug:
+    msg:
+      - "🎉 ¡EQUIPO MONITOREO CONFIGURADO!"
+      - "📊 Prometheus: http://{{ ansible_default_ipv4.address }}:{{ prometheus_config.port }}"
+      - "📈 Grafana: http://{{ ansible_default_ipv4.address }}:{{ grafana_config.port }}"
+      - "🔑 Usuario Grafana: {{ grafana_config.admin_user }} / {{ grafana_config.admin_password }}"

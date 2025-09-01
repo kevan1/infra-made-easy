@@ -1,0 +1,11 @@
+---
+# 🌍 HANDLERS PARA WEBSERVER-SSL
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: reload nginx
+  systemd:
+    name: nginx
+    state: reloaded

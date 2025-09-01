@@ -1,0 +1,15 @@
+---
+# 🌍 EQUIPO WEBSERVER + SSL - Setup Nginx con SSL y dominios
+- name: "🌍 ETAPA 2 - Configurar Webserver con SSL"
+  hosts: webserver_ssl_servers
+  become: yes
+  
+  pre_tasks:
+    - name: "📦 Actualizar paquetes del sistema"
+      apt:
+        update_cache: yes
+        upgrade: yes
+        
+  roles:
+    - common
+    - webserver-ssl

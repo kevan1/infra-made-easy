@@ -1,0 +1,15 @@
+---
+# 📈 EQUIPO MONITOREO - Setup Prometheus + Grafana
+- name: "📈 ETAPA 2 - Configurar Stack de Monitoreo"
+  hosts: monitoring_servers
+  become: yes
+  
+  pre_tasks:
+    - name: "📦 Actualizar paquetes del sistema"
+      apt:
+        update_cache: yes
+        upgrade: yes
+        
+  roles:
+    - common
+    - monitoring

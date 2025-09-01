@@ -1,0 +1,39 @@
+global:
+  scrape_interval: {{ prometheus_config.scrape_interval }}
+  evaluation_interval: {{ prometheus_config.evaluation_interval }}
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:{{ prometheus_config.port }}']
+
+  - job_name: 'node-exporters'
+    static_configs:
+      - targets: 
+        - 'localhost:{{ monitoring_config.node_exporter_port }}'
+{% for target in monitoring_targets %}
+        # {{ target.name }} - {{ target.metrics_path }}
+{% endfor %}
+
+{% if integrations.webserver_ssl.enable %}
+  - job_name: 'nginx-exporters'
+    static_configs:
+      - targets: 
+        - 'localhost:9113'  # Nginx exporter local
+{% endif %}
+
+{% if integrations.cicd.enable %}
+  - job_name: 'jenkins'
+    static_configs:
+      - targets: ['localhost:9115']  # Jenkins exporter
+{% endif %}
+
+{% if integrations.security.enable %}
+  - job_name: 'security-metrics'
+    static_configs:
+      - targets: ['localhost:9114']  # Security metrics
+{% endif %}

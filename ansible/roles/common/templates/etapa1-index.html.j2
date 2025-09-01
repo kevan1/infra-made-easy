@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Etapa 1 Completada - {{ student_name }}</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 50px;
+        }
+        .container { 
+            background: rgba(255,255,255,0.1); 
+            padding: 40px; 
+            border-radius: 15px; 
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 20px; }
+        .success { color: #4CAF50; font-size: 1.2em; }
+        .info { margin: 20px 0; }
+        .teams { display: flex; flex-wrap: wrap; justify-content: center; margin: 30px 0; }
+        .team { background: rgba(255,255,255,0.1); padding: 15px; margin: 10px; border-radius: 8px; }
+        .user-info { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 ¡ETAPA 1 COMPLETADA!</h1>
+        <p class="success">✅ Servidor configurado exitosamente</p>
+        
+        <div class="user-info">
+            <p><strong>👤 Estudiante:</strong> {{ student_name }}</p>
+            <p><strong>🌐 Servidor:</strong> {{ ansible_hostname }}</p>
+            <p><strong>📅 Fecha:</strong> {{ ansible_date_time.date }}</p>
+            <p><strong>⏰ Hora:</strong> {{ ansible_date_time.time }}</p>
+            <p><strong>🔧 Sistema:</strong> {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
+        </div>
+        
+        <p>🚀 <strong>Siguiente paso:</strong> Únete a un equipo para la Etapa 2</p>
+        
+        <div class="teams">
+            <div class="team">
+                <h3>📈 Monitoreo</h3>
+                <p>Prometheus + Grafana</p>
+            </div>
+            <div class="team">
+                <h3>🌍 Webserver+SSL</h3>
+                <p>Dominios + Certificados</p>
+            </div>
+            <div class="team">
+                <h3>🔒 Seguridad</h3>
+                <p>Lynis + Hardening</p>
+            </div>
+            <div class="team">
+                <h3>🔄 CI/CD</h3>
+                <p>Jenkins + Automatización</p>
+            </div>
+            <div class="team">
+                <h3>⚙️ Traefik</h3>
+                <p>Load Balancer + ACME</p>
+            </div>
+        </div>
+        
+        <p>📖 <strong>Documentación:</strong> Revisa docs/ETAPA2.md para elegir tu equipo</p>
+    </div>
+</body>
+</html>

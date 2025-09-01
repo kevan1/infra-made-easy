@@ -1,0 +1,15 @@
+---
+# 🔄 EQUIPO CI/CD - Setup Jenkins y automatización
+- name: "🔄 ETAPA 2 - Configurar Pipeline CI/CD"
+  hosts: cicd_servers
+  become: yes
+  
+  pre_tasks:
+    - name: "📦 Actualizar paquetes del sistema"
+      apt:
+        update_cache: yes
+        upgrade: yes
+        
+  roles:
+    - common
+    - cicd

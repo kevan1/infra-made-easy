@@ -1,0 +1,74 @@
+---
+# 🔒 ROLE SECURITY - Configuración de herramientas de seguridad
+- name: "🔧 Instalar herramientas de seguridad"
+  apt:
+    name: "{{ security_tools }}"
+    state: present
+
+- name: "🛡️ Configurar Fail2ban"
+  template:
+    src: fail2ban-jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart fail2ban
+
+- name: "🚀 Iniciar y habilitar servicios de seguridad"
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - fail2ban
+    - auditd
+
+- name: "📁 Crear directorio de reportes"
+  file:
+    path: "{{ reporting_config.report_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "🔍 Crear script de auditoría"
+  template:
+    src: security-audit.sh.j2
+    dest: /usr/local/bin/security-audit.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "⏰ Programar auditoría automática"
+  cron:
+    name: "Security audit with Lynis"
+    minute: "0"
+    hour: "{{ lynis_config.audit_time.split(':')[0] }}"
+    job: "/usr/local/bin/security-audit.sh"
+
+- name: "📊 Crear dashboard web de seguridad"
+  template:
+    src: security-dashboard.html.j2
+    dest: /var/www/html/security-dashboard.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: "🚀 Ejecutar primera auditoría"
+  command: /usr/local/bin/security-audit.sh
+  async: 300
+  poll: 0
+
+- name: "🔓 Configurar firewall para métricas"
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop: "{{ firewall_ports }}"
+
+- name: "🔒 Mostrar información de configuración"
+  debug:
+    msg:
+      - "🎉 ¡EQUIPO SEGURIDAD CONFIGURADO!"
+      - "🔍 Dashboard: http://{{ ansible_default_ipv4.address }}/security-dashboard.html"
+      - "📊 Reportes en: {{ reporting_config.report_directory }}"
+      - "⏰ Auditoría automática: {{ lynis_config.audit_frequency }} a las {{ lynis_config.audit_time }}"

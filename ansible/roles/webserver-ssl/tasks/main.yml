@@ -1,0 +1,68 @@
+---
+# 🌍 ROLE WEBSERVER-SSL - Configuración de Nginx con SSL
+- name: "🔧 Instalar Nginx y herramientas SSL"
+  apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+      - nginx-extras
+    state: present
+
+- name: "📊 Instalar Nginx Prometheus Exporter"
+  get_url:
+    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.11.0/nginx-prometheus-exporter_0.11.0_linux_amd64.tar.gz"
+    dest: /tmp/nginx-exporter.tar.gz
+  when: metrics_config.enable_nginx_exporter
+
+- name: "📊 Configurar Nginx Exporter"
+  include_tasks: nginx_exporter.yml
+  when: metrics_config.enable_nginx_exporter
+
+- name: "⚙️ Configurar Nginx optimizado"
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart nginx
+
+- name: "🌐 Habilitar sitio"
+  file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  notify: restart nginx
+
+- name: "🔥 Crear página web del equipo"
+  template:
+    src: index.html.j2
+    dest: "{{ web_config.document_root }}/index.html"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: "🚀 Iniciar y habilitar Nginx"
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: "🔓 Configurar firewall para webserver"
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop: "{{ firewall_ports }}"
+
+- name: "🔒 Configurar SSL (si dominios están configurados)"
+  include_tasks: ssl_setup.yml
+  when: domains is defined and domains | length > 0
+
+- name: "🌍 Mostrar información de configuración"
+  debug:
+    msg:
+      - "🎉 ¡EQUIPO WEBSERVER + SSL CONFIGURADO!"
+      - "🌐 Servidor: http://{{ ansible_default_ipv4.address }}"
+      - "📊 Métricas: http://{{ ansible_default_ipv4.address }}:{{ metrics_config.nginx_exporter_port }}/metrics"
+      - "🔒 Dominios configurados: {{ domains | join(', ') if domains is defined else 'Ninguno' }}"

@@ -1,0 +1,11 @@
+---
+# 🔒 HANDLERS PARA SECURITY
+- name: restart fail2ban
+  systemd:
+    name: fail2ban
+    state: restarted
+
+- name: restart auditd
+  systemd:
+    name: auditd
+    state: restarted
