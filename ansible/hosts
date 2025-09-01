@@ -1,0 +1,113 @@
+# 🎯🤝 Inventario para Curso "Infra Made Easy" - Formato INI
+# Estructura modular compatible con roles específicos por aplicación
+
+# ========================
+# 📈 SERVIDORES ESPECÍFICOS
+# ========================
+
+# 📈 SERVIDORES DE MONITOREO
+[monitoring_servers]
+monitoring1 ansible_host=127.0.0.1 server_name=prometheus-grafana-1
+monitoring2 ansible_host=127.0.0.1 server_name=prometheus-grafana-2
+
+# 🌍 SERVIDORES WEB + SSL
+[webserver_ssl_servers]
+webssl1 ansible_host=127.0.0.1 server_name=nginx-ssl-1 domain=web1.curso-infra.com
+webssl2 ansible_host=127.0.0.1 server_name=nginx-ssl-2 domain=web2.curso-infra.com
+webssl3 ansible_host=127.0.0.1 server_name=nginx-ssl-3 domain=web3.curso-infra.com
+
+# 🔒 SERVIDORES DE SEGURIDAD
+[security_servers]
+security1 ansible_host=127.0.0.1 server_name=lynis-security-1
+
+# 🔄 SERVIDORES CI/CD
+[cicd_servers]
+cicd1 ansible_host=127.0.0.1 server_name=jenkins-cicd-1
+cicd2 ansible_host=127.0.0.1 server_name=jenkins-cicd-2
+
+# ⚙️ SERVIDORES TRAEFIK
+[traefik_servers]
+traefik1 ansible_host=127.0.0.1 server_name=traefik-lb-1
+
+# 🎯 SERVIDORES INDIVIDUALES ESTUDIANTES
+[student_servers]
+my-server ansible_host=127.0.0.1 student_name=estudiante
+# Cada estudiante puede agregar su servidor individual aquí:
+# juan-server ansible_host=1.2.3.4 student_name=juan
+# maria-server ansible_host=5.6.7.8 student_name=maria
+
+# ========================
+# 🏗️ GRUPOS FUNCIONALES
+# ========================
+
+# 🌐 GRUPO WEBSERVERS - Todos los servidores web
+[webservers:children]
+webserver_ssl_servers
+security_servers
+
+# 📊 GRUPO MONITOREO - Servicios de observabilidad
+[monitoring:children]
+monitoring_servers
+
+# 🔧 GRUPO INFRAESTRUCTURA - Servicios de soporte
+[infrastructure:children]
+cicd_servers
+traefik_servers
+
+# 🎯 GRUPO ESTUDIANTES - Servidores individuales Etapa 1
+[students:children]
+student_servers
+
+# 🔧 GRUPO PRINCIPAL - TODOS LOS SERVIDORES DEL CURSO
+[common:children]
+webservers
+monitoring
+infrastructure
+students
+
+# ========================
+# 📊 VARIABLES DE GRUPO
+# ========================
+
+# Variables globales para todos los servidores
+[common:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args=-o StrictHostKeyChecking=no
+
+# Variables específicas por categoría de servidor
+[webservers:vars]
+server_category=web
+team_type=webserver-ssl
+
+[monitoring:vars]
+server_category=monitoring
+team_type=monitoring
+
+[infrastructure:vars]
+server_category=infrastructure
+
+[students:vars]
+server_category=student
+team_type=student
+server_category=individual
+
+# Variables específicas por tipo de equipo
+[monitoring_servers:vars]
+team_type=monitoring
+
+[webserver_ssl_servers:vars]
+team_type=webserver-ssl
+
+[security_servers:vars]
+team_type=security-lynis
+
+[cicd_servers:vars]
+team_type=cicd
+
+[traefik_servers:vars]
+team_type=traefik-acme
+
+[student_servers:vars]
+team_type=student
