@@ -2,11 +2,13 @@
 # Generado por Ansible - Role: prometheus
 
 global:
-  scrape_interval: {{ prometheus_config.scrape_interval | default('15s') }}
-  evaluation_interval: {{ prometheus_config.evaluation_interval | default('15s') }}
+  scrape_interval: {{ prometheus.scrape_interval | default('15s') }}
+  evaluation_interval: {{ prometheus.evaluation_interval | default('15s') }}
   external_labels:
-    cluster: 'curso-infra'
-    environment: 'production'
+    cluster: 'curso-infra-made-easy'
+    environment: '{{ ansible_environment | default("production") }}'
+    instance: '{{ ansible_hostname }}'
+    server: '{{ server_name | default(ansible_hostname) }}'
 
 # Configuración de reglas de alertas
 rule_files:
@@ -17,15 +19,15 @@ scrape_configs:
   # Prometheus se monitorea a sí mismo
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:{{ prometheus_config.port | default(9090) }}']
+      - targets: ['localhost:{{ prometheus.port | default(9090) }}']
 
   # Node exporters de todos los servidores
   - job_name: 'node-exporter'
     static_configs:
       - targets:
-{% for group in groups.all %}
-{% if hostvars[group]['ansible_default_ipv4'] is defined %}
-          - '{{ hostvars[group]["ansible_default_ipv4"]["address"] }}:{{ monitoring_config.node_exporter_port | default(9100) }}'
+{% for host in groups.all %}
+{% if hostvars[host]['ansible_default_ipv4'] is defined %}
+          - '{{ hostvars[host]["ansible_default_ipv4"]["address"] }}:9100'
 {% endif %}
 {% endfor %}
 
@@ -86,7 +88,4 @@ scrape_configs:
 {% endfor %}
 
 # Configuración de retención de datos
-storage:
-  tsdb:
-    retention.time: {{ prometheus_config.retention_time | default('30d') }}
-    retention.size: {{ prometheus_config.retention_size | default('10GB') }}
+# NOTA: La configuración de retención se maneja en el servicio systemd
