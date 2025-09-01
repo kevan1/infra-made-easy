@@ -282,7 +282,7 @@ graph TB
 
 ---
 
-## 📁 Estructura del Proyecto (Ultra Modular)
+## 📁 Estructura del Proyecto ( Modular)
 
 ```
 infra-made-easy/
@@ -325,7 +325,7 @@ infra-made-easy/
     └── ARQUITECTURA-MODULAR.md
 ```
 
-### 🧾 **Roles Ultra Modulares**
+### 🧾 **Roles  Modulares**
 Cada aplicación tiene su **propio role independiente**:
 - 🔧 **common**: Usuarios + configuración base
 - 🌐 **nginx**: Servidor web optimizado
