@@ -1,119 +1,69 @@
 # USUARIOS DEL CURSO - Configuración Centralizada
-# Archivo central que define todos los usuarios, sus claves SSH públicas y permisos
+# Estructura simplificada para mejor gestión
 
-users:
-  # Usuario: Juan
-  juan:
-    full_name: "Juan Pérez"
-    email: "juan@curso-infra.com"
-    ssh_public_key: "{{ lookup('file', 'users/juan/id_rsa.pub') }}"
-    teams: 
-      - monitoring
-      - cicd
-    permissions:
-      monitoring_servers: 
-        - sudo
-        - docker
-      cicd_servers:
-        - sudo  
-        - docker
-        - jenkins
-      webserver_ssl_servers:
-        - read_logs
-      security_servers:
-        - read_reports
-      traefik_servers:
-        - read_config
+# Usuarios administradores del curso
+admin_users:
+  - user: juan
+    email: juan@curso-infra.com
+    groups:
+      - sudo
+      - ssh-access
+      - docker
+      - adm
+      - systemd-journal
+    authorized_keys:
+      - name: juan
+        key: "{{ lookup('file', 'users/juan/id_rsa.pub') }}"
+        
+  - user: maria
+    email: maria@curso-infra.com
+    groups:
+      - sudo
+      - ssh-access
+      - docker
+      - www-data
+      - adm
+      - systemd-journal
+    authorized_keys:
+      - name: maria
+        key: "{{ lookup('file', 'users/maria/id_rsa.pub') }}"
+        
+  - user: pedro
+    email: pedro@curso-infra.com
+    groups:
+      - sudo
+      - ssh-access
+      - docker
+      - security
+      - adm
+      - systemd-journal
+    authorized_keys:
+      - name: pedro
+        key: "{{ lookup('file', 'users/pedro/id_rsa.pub') }}"
 
-  # Usuario: María  
-  maria:
-    full_name: "María González"
-    email: "maria@curso-infra.com"
-    ssh_public_key: "{{ lookup('file', 'users/maria/id_rsa.pub') }}"
-    teams:
-      - webserver-ssl
-      - traefik-acme
-    permissions:
-      webserver_ssl_servers:
-        - sudo
-        - www-data
-        - ssl_management
-      traefik_servers:
-        - sudo
-        - docker
-        - traefik_config
-      monitoring_servers:
-        - read_metrics
-      security_servers:
-        - read_reports
-      cicd_servers:
-        - read_pipelines
+# Usuarios adicionales por servidor/equipo (se pueden agregar dinámicamente)
+additional_users: []
 
-  # Usuario: Pedro
-  pedro:
-    full_name: "Pedro Rodríguez" 
-    email: "pedro@curso-infra.com"
-    ssh_public_key: "{{ lookup('file', 'users/pedro/id_rsa.pub') }}"
-    teams:
-      - security-lynis
-      - traefik-acme
-    permissions:
-      security_servers:
-        - sudo
-        - security_tools
-        - audit_access
-      traefik_servers:
-        - sudo
-        - docker
-      monitoring_servers:
-        - read_metrics
-      webserver_ssl_servers:
-        - read_logs
-      cicd_servers:
-        - security_integration
+# Lista final de usuarios
+users: "{{ admin_users + additional_users }}"
 
-# DEFINICIÓN DE PERMISOS
-# Explicación de qué significa cada permiso
+# Usuarios para administración específica (usado por diferentes roles)
+monitoring_admins: "{{ admin_users }}"
+webserver_admins: "{{ admin_users }}"
+security_admins: "{{ admin_users }}"
+cicd_admins: "{{ admin_users }}"
+traefik_admins: "{{ admin_users }}"
 
-permission_definitions:
-  sudo: "Acceso completo de administrador"
-  docker: "Puede gestionar contenedores Docker"  
-  www-data: "Puede modificar archivos web"
-  ssl_management: "Puede gestionar certificados SSL"
-  jenkins: "Acceso a configuración de Jenkins"
-  traefik_config: "Puede modificar configuración de Traefik"
-  security_tools: "Puede ejecutar herramientas de seguridad"
-  audit_access: "Puede ejecutar auditorías en otros servidores"
-  read_logs: "Solo lectura de logs"
-  read_metrics: "Solo lectura de métricas"
-  read_reports: "Solo lectura de reportes"
-  read_pipelines: "Solo lectura de pipelines"
-  read_config: "Solo lectura de configuraciones"
-  security_integration: "Puede integrar security checks en pipelines"
-
-# EQUIPOS Y SUS ROLES
-team_roles:
-  monitoring:
-    description: "Vigilar salud de toda la infraestructura"
-    primary_servers: ["monitoring_servers"]
-    access_to: ["all_servers"]
-    
-  webserver-ssl:
-    description: "Servidores web con SSL y dominios"
-    primary_servers: ["webserver_ssl_servers"]
-    access_to: ["webserver_ssl_servers"]
-    
-  security-lynis:
-    description: "Auditoría y hardening de seguridad"
-    primary_servers: ["security_servers"]
-    access_to: ["all_servers"]  # Necesita auditar todos
-    
-  cicd:
-    description: "Automatización de deployments"
-    primary_servers: ["cicd_servers"]
-    access_to: ["webserver_ssl_servers", "cicd_servers"]
-    
-  traefik-acme:
-    description: "Load balancer y certificados automáticos"
-    primary_servers: ["traefik_servers"]
-    access_to: ["traefik_servers"]
+# Configuración de limpieza de usuarios por defecto
+cleanup_users:
+  - user: ubuntu
+    password: '!'
+    groups: []
+    authorized_keys: []
+    state: present  # Mantenemos ubuntu pero sin acceso
+  - user: root
+    password: '!'
+    groups:
+      - root
+    authorized_keys: []
+    state: present

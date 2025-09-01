@@ -125,4 +125,5 @@ ansible-galaxy collection install -r requirements.yml --force
 Fecha: $(date)
 Versión Ansible: 11.9.0
 Python: 3.13.5
+Estructura Usuarios: Simplificada y Optimizada
 Estado: LISTO PARA PRODUCCIÓN
