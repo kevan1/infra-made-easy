@@ -34,7 +34,7 @@ server-f0x17 ansible_host=34.122.207.0 server_name=prometheus-grafana-99 ansible
 # SERVIDORES INDIVIDUALES ESTUDIANTES
 [student_servers]
 #server-f0x17 ansible_host=34.122.207.0 student_name=f0x17 ansible_user=fox
-
+server-kevan ansible_host=ec2-3-22-235-89.us-east-2.compute.amazonaws.com student_name=kevan ansible_user=kevan
 # Cada estudiante puede agregar su servidor individual aqui:
 # juan-server ansible_host=1.2.3.4 student_name=juan
 # maria-server ansible_host=5.6.7.8 student_name=maria
