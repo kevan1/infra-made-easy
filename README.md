@@ -142,10 +142,11 @@ ansible-playbook playbooks/etapa2/setup-traefik-acme.yml
 ## 🛠️ Requisitos
 
 ### 💻 Software
-- **Ansible** 2.10+
 - **Python** 3.8+
+- **pip** (gestor de paquetes de Python)
 - **AWS CLI** configurado
 - **Git**
+- Todas las dependencias se instalan automáticamente desde `requirements.txt`
 
 ### ☁️ AWS
 - Cuenta de AWS activa
@@ -167,16 +168,16 @@ ansible-playbook playbooks/etapa2/setup-traefik-acme.yml
 python3 -m venv venv-ansible
 source venv-ansible/bin/activate  # En Windows: venv-ansible\Scripts\activate
 
-# 2. Instalar Ansible y dependencias
-pip install --upgrade pip
-pip install ansible
-
-# 3. Verificar AWS CLI (debe estar previamente configurado)
-aws sts get-caller-identity
-
-# 4. Clonar repositorio del curso
+# 2. Clonar repositorio del curso
 git clone https://github.com/SOLx-AR/infra-made-easy.git
 cd infra-made-easy
+
+# 3. Instalar todas las dependencias Python
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 4. Verificar AWS CLI (debe estar previamente configurado)
+aws sts get-caller-identity
 
 # 5. Instalar colecciones Ansible necesarias
 ansible-galaxy install -r requirements.yml
@@ -291,6 +292,8 @@ infra-made-easy/
 │   ├── maria/id_rsa.pub
 │   └── pedro/id_rsa.pub
 ├── 👥 users.yml                 # 🔑 Configuración centralizada de usuarios
+├── 📦 requirements.txt          # 🐍 Dependencias Python
+├── 📦 requirements.yml          # 📦 Colecciones Ansible
 ├── 🤖 ansible/                  # 🔧 Automatización
 │   ├── inventory.yml        # 🗺️ Inventario de servidores
 │   ├── ansible.cfg          # ⚙️ Configuración
