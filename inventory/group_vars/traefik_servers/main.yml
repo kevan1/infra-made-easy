@@ -4,7 +4,7 @@
 team_info:
   name: "traefik-acme"
   description: "Equipo especializado en load balancing y certificados automáticos"
-  emoji: "⚙️"
+  emoji: ""
 
 # Configuración de Traefik
 traefik_config:

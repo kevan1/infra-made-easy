@@ -4,7 +4,7 @@
 team_info:
   name: "cicd"
   description: "Equipo especializado en integración y despliegue continuo"
-  emoji: "🔄"
+  emoji: ""
 
 # Configuración de Jenkins
 jenkins_config:

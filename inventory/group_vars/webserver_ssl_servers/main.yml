@@ -4,7 +4,7 @@
 team_info:
   name: "webserver-ssl"
   description: "Equipo especializado en servidores web con SSL y dominios"
-  emoji: "🌍"
+  emoji: ""
 
 # Configuración de Nginx
 nginx_config:

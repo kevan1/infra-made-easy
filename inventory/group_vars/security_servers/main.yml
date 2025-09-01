@@ -4,7 +4,7 @@
 team_info:
   name: "security-lynis"
   description: "Equipo especializado en auditoría y hardening de seguridad"
-  emoji: "🔒"
+  emoji: ""
 
 # Configuración de Lynis
 lynis_config:

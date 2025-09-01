@@ -4,7 +4,7 @@
 team_info:
   name: "monitoring"
   description: "Equipo especializado en monitoreo y observabilidad"
-  emoji: "📈"
+  emoji: ""
 
 # Configuración de Prometheus
 prometheus_config:
