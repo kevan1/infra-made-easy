@@ -1,0 +1,24 @@
+---
+# 🎯 Dependencias para Curso "Infra Made Easy" - Arquitectura Modular
+# Colecciones necesarias para todos los roles específicos por aplicación
+
+collections:
+  # Colección base con módulos generales
+  - name: community.general
+    version: ">=7.0.0"
+    
+  # Módulos POSIX para gestión de servicios y archivos
+  - name: ansible.posix
+    version: ">=1.5.0"
+    
+  # Módulos para gestión de contenedores Docker (role: docker, jenkins, prometheus, grafana)
+  - name: community.docker
+    version: ">=3.0.0"
+    
+  # Módulos de criptografía para SSL/TLS (roles: nginx, letsencrypt, traefik)
+  - name: community.crypto
+    version: ">=2.0.0"
+    
+  # Módulos para manejo de archivos y plantillas (todos los roles)
+  - name: ansible.builtin
+    version: ">=2.0.0"

@@ -161,40 +161,83 @@ ansible-playbook playbooks/etapa2/setup-traefik-acme.yml
 
 ## 🎯 Primeros Pasos
 
-### 1️⃣ Preparar tu Entorno
+### 1️⃣ Preparar tu Entorno Local
 ```bash
-# Instalar Ansible
+# 1. Crear entorno virtual Python (RECOMENDADO)
+python3 -m venv venv-ansible
+source venv-ansible/bin/activate  # En Windows: venv-ansible\Scripts\activate
+
+# 2. Instalar Ansible y dependencias
+pip install --upgrade pip
 pip install ansible
 
-# Verificar AWS CLI
+# 3. Verificar AWS CLI (debe estar previamente configurado)
 aws sts get-caller-identity
 
-# Clonar repositorio
+# 4. Clonar repositorio del curso
 git clone https://github.com/SOLx-AR/infra-made-easy.git
 cd infra-made-easy
+
+# 5. Instalar colecciones Ansible necesarias
+ansible-galaxy install -r requirements.yml
 ```
 
-### 2️⃣ Agregar tu Usuario
+### 2️⃣ Agregar tu Usuario al Proyecto
 ```bash
-# Crear tu directorio
-mkdir users/tu-nombre
+# 1. Crear tu directorio personal
+mkdir users/tu-nombre  # Reemplaza "tu-nombre" con tu nombre real
 
-# Agregar tu clave SSH pública
+# 2. Copiar tu clave SSH pública
 cp ~/.ssh/id_rsa.pub users/tu-nombre/
+
+# 3. Crear una nueva rama para tu contribución
+git checkout -b add-user-tu-nombre
+
+# 4. Confirmar cambios y crear Pull Request
+git add users/tu-nombre/
+git commit -m "➕ Add user: tu-nombre"
+git push origin add-user-tu-nombre
+
+# 5. Crear Pull Request en GitHub para que se apruebe tu usuario
+# Ve a: https://github.com/SOLx-AR/infra-made-easy/compare
+# Selecciona tu rama "add-user-tu-nombre" y crea el PR
 ```
 
-### 3️⃣ Completar Etapa 1
+### 3️⃣ Completar Etapa 1 (Servidor Individual)
 ```bash
-# Configurar tu servidor básico
+# 1. Asegúrate de estar en el directorio correcto
 cd ansible
-export MY_SERVER_IP="tu.ip.de.ec2"
-ansible-playbook playbooks/etapa1-webserver-basico.yml
+
+# 2. Configurar la IP de tu servidor EC2
+export MY_SERVER_IP="tu.ip.de.ec2"  # Reemplaza con tu IP real
+export STUDENT_NAME="tu-nombre"     # Mismo nombre usado arriba
+
+# 3. Ejecutar playbook de configuración básica
+ansible-playbook -i hosts etapa1-webserver-basico.yml
+
+# 4. Verificar que funciona
+curl http://$MY_SERVER_IP
+# Deberías ver la página de bienvenida de Nginx
 ```
 
 ### 4️⃣ Elegir tu Equipo para Etapa 2
 ```bash
-# Ejemplo: unirse al equipo de monitoreo
-ansible-playbook playbooks/etapa2/setup-monitoring.yml
+# Una vez aprobado tu PR y completada la Etapa 1, elige tu especialización:
+
+# 📊 Equipo MONITOREO - Vigilar toda la infraestructura
+ansible-playbook -i hosts setup-monitoring.yml
+
+# 🌍 Equipo WEBSERVER + SSL - Producción con certificados
+ansible-playbook -i hosts setup-webserver-ssl.yml
+
+# 🔒 Equipo SEGURIDAD - Auditar y fortalecer sistemas
+ansible-playbook -i hosts setup-security.yml
+
+# 🔄 Equipo CI/CD - Automatizar deployments
+ansible-playbook -i hosts setup-cicd.yml
+
+# ⚙️ Equipo TRAEFIK - Load balancer inteligente
+ansible-playbook -i hosts setup-traefik.yml
 ```
 
 ---
