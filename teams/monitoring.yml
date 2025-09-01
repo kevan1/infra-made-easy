@@ -1,0 +1,49 @@
+# 📈 EQUIPO MONITOREO
+# Responsables de vigilar la salud de toda la infraestructura
+
+team_name: monitoring
+description: "Equipo especializado en monitoreo y observabilidad"
+
+# Miembros del equipo (agregar nombres aquí)
+members:
+  - juan
+  # - agregar_tu_nombre_aqui
+
+# Herramientas a instalar
+tools:
+  - name: "prometheus"
+    description: "Sistema de monitoreo y alertas"
+    port: 9090
+    
+  - name: "grafana" 
+    description: "Dashboards y visualización"
+    port: 3000
+    
+  - name: "node_exporter"
+    description: "Métricas del sistema"
+    port: 9100
+    
+  - name: "alertmanager"
+    description: "Gestión de alertas"
+    port: 9093
+
+# Puertos que necesita abrir
+ports:
+  - 9090  # Prometheus
+  - 3000  # Grafana
+  - 9100  # Node Exporter
+  - 9093  # Alertmanager
+
+# Servidores a monitorear (se conecta con otros equipos)
+monitored_targets:
+  - webserver_team
+  - security_team
+  - cicd_team
+  - traefik_team
+
+# Variables específicas del equipo
+variables:
+  prometheus_retention: "30d"
+ # grafana_admin_password: "admin123" #change this for a vault password
+  enable_slack_alerts: true
+  scrape_interval: "15s"
