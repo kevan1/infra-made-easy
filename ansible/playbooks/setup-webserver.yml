@@ -1,0 +1,64 @@
+---
+# Playbook para configurar servidores del grupo WEBSERVER
+- name: Configurar servidores web
+  hosts: webserver_group
+  become: yes
+  vars_files:
+    - ../../groups/webserver.yml
+
+  tasks:
+    - name: Actualizar paquetes del sistema
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Instalar Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Iniciar y habilitar Nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Crear usuarios del grupo webserver
+      user:
+        name: "{{ item }}"
+        groups: sudo,www-data
+        shell: /bin/bash
+        create_home: yes
+      loop: "{{ members }}"
+
+    - name: Configurar claves SSH para usuarios
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', '../../users/' + item + '/id_rsa.pub') }}"
+      loop: "{{ members }}"
+      ignore_errors: yes
+
+    - name: Configurar firewall para puertos web
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop: "{{ ports }}"
+      when: ports is defined
+
+    - name: Crear página web básica
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Servidor Web - Grupo Webserver</title>
+          </head>
+          <body>
+              <h1>¡Servidor configurado exitosamente!</h1>
+              <p>Este servidor fue configurado por el grupo webserver.</p>
+              <p>Miembros: {{ members | join(', ') }}</p>
+          </body>
+          </html>
+        dest: "{{ variables.web_root | default('/var/www/html') }}/index.html"
+        owner: www-data
+        group: www-data

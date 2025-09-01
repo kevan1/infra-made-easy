@@ -1,0 +1,73 @@
+---
+# Playbook para configurar servidores del grupo CI/CD
+- name: Configurar herramientas de CI/CD
+  hosts: cicd_servers
+  become: yes
+  vars_files:
+    - ../../groups/cicd.yml
+
+  tasks:
+    - name: Actualizar paquetes del sistema
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Instalar dependencias básicas
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - openjdk-11-jdk
+        state: present
+
+    - name: Instalar Docker
+      apt:
+        name: docker.io
+        state: present
+      when: variables.enable_docker | default(false)
+
+    - name: Iniciar y habilitar Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      when: variables.enable_docker | default(false)
+
+    - name: Crear usuarios del grupo CI/CD
+      user:
+        name: "{{ item }}"
+        groups: sudo,docker
+        shell: /bin/bash
+        create_home: yes
+      loop: "{{ members }}"
+
+    - name: Configurar claves SSH para usuarios
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', '../../users/' + item + '/id_rsa.pub') }}"
+      loop: "{{ members }}"
+      ignore_errors: yes
+
+    - name: Abrir puertos para herramientas CI/CD
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop: "{{ ports }}"
+      when: ports is defined
+
+    - name: Crear directorio de Jenkins (si se usa)
+      file:
+        path: "{{ variables.jenkins_home | default('/var/lib/jenkins') }}"
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0755'
+      ignore_errors: yes
+
+    - name: Mostrar información del grupo
+      debug:
+        msg: 
+          - "Grupo CI/CD configurado exitosamente"
+          - "Miembros: {{ members | join(', ') }}"
+          - "Herramientas disponibles: {{ tools | map(attribute='name') | join(', ') }}"

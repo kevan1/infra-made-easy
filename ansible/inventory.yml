@@ -1,0 +1,40 @@
+# Inventario simplificado para curso introductorio
+# Organizado por grupos de usuarios
+
+all:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_user: ubuntu
+
+  children:
+    # Grupo para herramientas de linting
+    lint_servers:
+      hosts:
+        lint1:
+          ansible_host: "{{ lookup('env', 'LINT_SERVER_IP') | default('127.0.0.1') }}"
+      vars:
+        group_type: lint
+        install_dev_tools: true
+
+    # Grupo para servidores web  
+    webserver_group:
+      hosts:
+        web1:
+          ansible_host: "{{ lookup('env', 'WEB_SERVER_IP') | default('127.0.0.1') }}"
+        web2:
+          ansible_host: "{{ lookup('env', 'WEB_SERVER_IP_2') | default('127.0.0.1') }}"
+      vars:
+        group_type: webserver
+        http_port: 80
+        https_port: 443
+
+    # Grupo para CI/CD
+    cicd_servers:
+      hosts:
+        cicd1:
+          ansible_host: "{{ lookup('env', 'CICD_SERVER_IP') | default('127.0.0.1') }}"
+      vars:
+        group_type: cicd
+        jenkins_port: 8080
+        docker_enabled: true
