@@ -1,0 +1,55 @@
+# 🌍 EQUIPO WEBSERVER + SSL
+# Responsables de configurar servidores web con dominios y SSL
+
+team_name: webserver-ssl
+description: "Equipo especializado en servidores web con SSL y dominios"
+
+# Miembros del equipo (agregar nombres aquí)
+members:
+  - maria
+  # - agregar_tu_nombre_aqui
+
+# Servicios a configurar
+services:
+  - name: "nginx"
+    description: "Servidor web Nginx optimizado"
+    config_file: "nginx-ssl.conf.j2"
+    
+  - name: "certbot"
+    description: "Certificados SSL gratuitos"
+    provider: "letsencrypt"
+
+# Puertos necesarios
+ports:
+  - 80    # HTTP (redirect to HTTPS)
+  - 443   # HTTPS
+  - 8080  # Puerto alternativo
+
+# Dominios a configurar
+domains:
+  - example1.curso-infra.com
+  - example2.curso-infra.com
+  - example3.curso-infra.com
+
+# Integración con otros equipos
+integrations:
+  - team: monitoring
+    purpose: "Exportar métricas para Prometheus"
+    port: 9113  # Nginx Prometheus Exporter
+  
+  - team: security
+    purpose: "Permitir auditorías de Lynis"
+    
+  - team: cicd
+    purpose: "Recibir deployments automáticos"
+    
+  - team: traefik
+    purpose: "Registrarse en load balancer"
+
+# Variables específicas
+variables:
+  ssl_provider: "letsencrypt"
+  nginx_worker_processes: "auto"
+  enable_http2: true
+  enable_gzip: true
+  max_body_size: "50M"

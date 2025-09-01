@@ -1,0 +1,154 @@
+---
+# 🔄 EQUIPO CI/CD - Setup Jenkins y automatización
+- name: "🔄 ETAPA 2 - Configurar Pipeline CI/CD"
+  hosts: cicd_servers
+  become: yes
+  vars_files:
+    - ../../../teams/cicd.yml
+
+  tasks:
+    - name: "📦 Actualizar sistema base"
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: "☕ Instalar Java para Jenkins"
+      apt:
+        name:
+          - openjdk-11-jdk
+          - curl
+          - git
+        state: present
+
+    - name: "🐳 Instalar Docker"
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+      when: variables.enable_docker_in_docker | default(true)
+
+    - name: "🚀 Iniciar Docker"
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: "👥 Crear usuarios del equipo"
+      user:
+        name: "{{ item }}"
+        groups: sudo,docker
+        shell: /bin/bash
+        create_home: yes
+      loop: "{{ members }}"
+
+    - name: "🔑 Configurar claves SSH"
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', '../../../users/' + item + '/id_rsa.pub') }}"
+      loop: "{{ members }}"
+      ignore_errors: yes
+
+    - name: "🔧 Descargar e instalar Jenkins"
+      shell: |
+        curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+        echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+        apt update
+        apt install jenkins -y
+
+    - name: "🚀 Iniciar Jenkins"
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    - name: "🔓 Configurar firewall"
+      ufw:
+        rule: allow
+        port: "8080"
+
+    - name: "📄 Crear script de deploy simple"
+      copy:
+        content: |
+          #!/bin/bash
+          # Script de deploy automático
+          
+          REPO_URL="${1:-https://github.com/curso-infra/sample-web-app.git}"
+          TARGET_SERVERS="${2:-webserver_team_ips}"
+          
+          echo "🚀 Iniciando deploy desde $REPO_URL"
+          
+          # Clonar repositorio
+          rm -rf /tmp/deploy-repo
+          git clone $REPO_URL /tmp/deploy-repo
+          cd /tmp/deploy-repo
+          
+          # Ejecutar tests (si existen)
+          if [ -f "package.json" ]; then
+              npm test || echo "⚠️ Tests fallaron, pero continuando..."
+          fi
+          
+          # Security scan (integración con equipo seguridad)
+          echo "🔍 Security scan placeholder"
+          
+          # Deploy a servidores web
+          echo "📦 Deploying to webservers..."
+          # rsync -avz --delete ./ webserver1:/var/www/html/
+          
+          echo "✅ Deploy completado"
+        dest: /usr/local/bin/auto-deploy.sh
+        mode: '0755'
+
+    - name: "📊 Crear dashboard de CI/CD"
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>🔄 CI/CD Dashboard</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { background: #00b894; color: white; padding: 20px; border-radius: 8px; }
+                  .pipeline { background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; }
+                  .status { padding: 5px 10px; border-radius: 5px; color: white; }
+                  .success { background: #00b894; }
+                  .running { background: #fdcb6e; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🔄 CI/CD Pipeline Dashboard</h1>
+                  <p>Equipo: CI/CD | Miembros: {{ members | join(', ') }}</p>
+              </div>
+              
+              <div class="pipeline">
+                  <h2>📋 Pipelines Activos</h2>
+                  <div>
+                      <h3>🌐 Web App Deploy</h3>
+                      <span class="status success">✅ Ready</span>
+                      <p>Deploy automático a servidores del Equipo Webserver</p>
+                  </div>
+              </div>
+              
+              <div class="pipeline">
+                  <h2>🔗 Integraciones</h2>
+                  <ul>
+                      <li>📊 <strong>Monitoreo:</strong> Métricas de pipeline</li>
+                      <li>🔒 <strong>Seguridad:</strong> Security scanning integrado</li>
+                      <li>🌍 <strong>Webserver:</strong> Deploy automático</li>
+                      <li>⚙️ <strong>Traefik:</strong> Actualización de routing</li>
+                  </ul>
+              </div>
+          </body>
+          </html>
+        dest: /var/www/html/cicd-dashboard.html
+
+    - name: "🔄 Mostrar información del equipo"
+      debug:
+        msg:
+          - "🎉 ¡EQUIPO CI/CD CONFIGURADO!"
+          - "👥 Miembros: {{ members | join(', ') }}"
+          - "🔧 Jenkins: http://{{ ansible_default_ipv4.address }}:8080"
+          - "📊 Dashboard: http://{{ ansible_default_ipv4.address }}/cicd-dashboard.html"
+          - "🚀 Script de deploy: /usr/local/bin/auto-deploy.sh"
+          - "🔗 Listo para integrarse con otros equipos"

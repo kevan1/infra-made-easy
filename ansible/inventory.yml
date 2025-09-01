@@ -1,40 +1,52 @@
-# Inventario simplificado para curso introductorio
-# Organizado por grupos de usuarios
+# 🎯🤝 Inventario para Curso "Infra Made Easy"
+# ETAPA 1: Individual | ETAPA 2: Equipos Colaborativos
 
 all:
   vars:
     ansible_python_interpreter: /usr/bin/python3
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     ansible_user: ubuntu
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
 
   children:
-    # Grupo para herramientas de linting
-    lint_servers:
+    # 📈 EQUIPO 1 - MONITOREO
+    monitoring_servers:
       hosts:
-        lint1:
-          ansible_host: "{{ lookup('env', 'LINT_SERVER_IP') | default('127.0.0.1') }}"
+        monitoring1:
+          ansible_host: "{{ lookup('env', 'MONITORING_SERVER_IP') | default('127.0.0.1') }}"
       vars:
-        group_type: lint
-        install_dev_tools: true
-
-    # Grupo para servidores web  
-    webserver_group:
+        team_type: monitoring
+        
+    # 🌍 EQUIPO 2 - WEBSERVER + SSL
+    webserver_ssl_servers:
       hosts:
-        web1:
-          ansible_host: "{{ lookup('env', 'WEB_SERVER_IP') | default('127.0.0.1') }}"
-        web2:
-          ansible_host: "{{ lookup('env', 'WEB_SERVER_IP_2') | default('127.0.0.1') }}"
+        webssl1:
+          ansible_host: "{{ lookup('env', 'WEBSSL_SERVER_IP') | default('127.0.0.1') }}"
+        webssl2:
+          ansible_host: "{{ lookup('env', 'WEBSSL_SERVER_IP_2') | default('127.0.0.1') }}"
       vars:
-        group_type: webserver
-        http_port: 80
-        https_port: 443
-
-    # Grupo para CI/CD
+        team_type: webserver-ssl
+        
+    # 🔒 EQUIPO 3 - SEGURIDAD
+    security_servers:
+      hosts:
+        security1:
+          ansible_host: "{{ lookup('env', 'SECURITY_SERVER_IP') | default('127.0.0.1') }}"
+      vars:
+        team_type: security-lynis
+        
+    # 🔄 EQUIPO 4 - CI/CD
     cicd_servers:
       hosts:
         cicd1:
           ansible_host: "{{ lookup('env', 'CICD_SERVER_IP') | default('127.0.0.1') }}"
       vars:
-        group_type: cicd
-        jenkins_port: 8080
-        docker_enabled: true
+        team_type: cicd
+        
+    # ⚙️ EQUIPO 5 - TRAEFIK
+    traefik_servers:
+      hosts:
+        traefik1:
+          ansible_host: "{{ lookup('env', 'TRAEFIK_SERVER_IP') | default('127.0.0.1') }}"
+      vars:
+        team_type: traefik-acme

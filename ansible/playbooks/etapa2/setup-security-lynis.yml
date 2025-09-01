@@ -1,0 +1,153 @@
+---
+# 🔒 EQUIPO SEGURIDAD - Setup Lynis y herramientas de seguridad
+- name: "🔒 ETAPA 2 - Configurar Auditoría de Seguridad"
+  hosts: security_servers
+  become: yes
+  vars_files:
+    - ../../../teams/security-lynis.yml
+
+  tasks:
+    - name: "📦 Actualizar sistema base"
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: "🔧 Instalar herramientas de seguridad"
+      apt:
+        name:
+          - lynis
+          - fail2ban
+          - ufw
+          - chkrootkit
+          - rkhunter
+          - aide
+          - auditd
+        state: present
+
+    - name: "👥 Crear usuarios del equipo"
+      user:
+        name: "{{ item }}"
+        groups: sudo
+        shell: /bin/bash
+        create_home: yes
+      loop: "{{ members }}"
+
+    - name: "🔑 Configurar claves SSH"
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', '../../../users/' + item + '/id_rsa.pub') }}"
+      loop: "{{ members }}"
+      ignore_errors: yes
+
+    - name: "🛡️ Configurar Fail2ban"
+      copy:
+        content: |
+          [DEFAULT]
+          bantime = 3600
+          findtime = 600
+          maxretry = 5
+          
+          [sshd]
+          enabled = true
+          port = ssh
+          filter = sshd
+          logpath = /var/log/auth.log
+          maxretry = 3
+        dest: /etc/fail2ban/jail.local
+      notify: restart fail2ban
+
+    - name: "🔍 Crear script de auditoría diaria"
+      copy:
+        content: |
+          #!/bin/bash
+          # Script de auditoría de seguridad diaria
+          
+          DATE=$(date +%Y%m%d_%H%M%S)
+          REPORT_DIR="/var/log/security-audit"
+          
+          mkdir -p $REPORT_DIR
+          
+          echo "🔍 Iniciando auditoría de seguridad - $DATE"
+          
+          # Ejecutar Lynis
+          lynis audit system --quiet --report-file $REPORT_DIR/lynis_$DATE.log
+          
+          # Buscar rootkits
+          chkrootkit > $REPORT_DIR/chkrootkit_$DATE.log 2>&1
+          
+          # Verificar archivos del sistema
+          rkhunter --check --skip-keypress --report-warnings-only > $REPORT_DIR/rkhunter_$DATE.log 2>&1
+          
+          echo "✅ Auditoría completada - Reportes en $REPORT_DIR"
+          
+          # Generar resumen
+          echo "📊 RESUMEN DE SEGURIDAD - $DATE" > $REPORT_DIR/summary_$DATE.txt
+          echo "=================================" >> $REPORT_DIR/summary_$DATE.txt
+          echo "Lynis Score: $(grep 'Hardening index' $REPORT_DIR/lynis_$DATE.log | tail -1)" >> $REPORT_DIR/summary_$DATE.txt
+          echo "Warnings: $(grep -c 'Warning' $REPORT_DIR/lynis_$DATE.log)" >> $REPORT_DIR/summary_$DATE.txt
+          echo "Suggestions: $(grep -c 'Suggestion' $REPORT_DIR/lynis_$DATE.log)" >> $REPORT_DIR/summary_$DATE.txt
+        dest: /usr/local/bin/security-audit.sh
+        mode: '0755'
+
+    - name: "⏰ Programar auditoría diaria"
+      cron:
+        name: "Security audit with Lynis"
+        minute: "0"
+        hour: "2"
+        job: "/usr/local/bin/security-audit.sh"
+
+    - name: "🚀 Ejecutar primera auditoría"
+      command: /usr/local/bin/security-audit.sh
+
+    - name: "📊 Crear dashboard web para reportes"
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>🔒 Security Dashboard - Equipo Seguridad</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { background: #ff6b6b; color: white; padding: 20px; border-radius: 8px; }
+                  .reports { margin: 20px 0; }
+                  .report-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🔒 Security Audit Dashboard</h1>
+                  <p>Equipo: Seguridad | Miembros: {{ members | join(', ') }}</p>
+              </div>
+              <div class="reports">
+                  <h2>📋 Reportes de Seguridad</h2>
+                  <div class="report-item">
+                      <h3>🔍 Último Audit Lynis</h3>
+                      <p>Revisa: <code>/var/log/security-audit/</code></p>
+                  </div>
+                  <div class="report-item">
+                      <h3>🛡️ Estado del Firewall</h3>
+                      <p>Comando: <code>sudo ufw status</code></p>
+                  </div>
+                  <div class="report-item">
+                      <h3>📊 Fail2ban Status</h3>
+                      <p>Comando: <code>sudo fail2ban-client status</code></p>
+                  </div>
+              </div>
+          </body>
+          </html>
+        dest: /var/www/html/security-dashboard.html
+
+    - name: "🔒 Mostrar información del equipo"
+      debug:
+        msg:
+          - "🎉 ¡EQUIPO SEGURIDAD CONFIGURADO!"
+          - "👥 Miembros: {{ members | join(', ') }}"
+          - "🔍 Dashboard: http://{{ ansible_default_ipv4.address }}/security-dashboard.html"
+          - "📊 Reportes en: /var/log/security-audit/"
+          - "⏰ Auditoría automática: Diaria a las 2:00 AM"
+
+  handlers:
+    - name: restart fail2ban
+      systemd:
+        name: fail2ban
+        state: restarted

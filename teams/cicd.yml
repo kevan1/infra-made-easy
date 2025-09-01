@@ -1,0 +1,72 @@
+# 🔄 EQUIPO CI/CD
+# Responsables de automatizar deployments y pipelines
+
+team_name: cicd
+description: "Equipo especializado en integración y despliegue continuo"
+
+# Miembros del equipo (agregar nombres aquí)
+members:
+  - juan
+  - pedro
+  # - agregar_tu_nombre_aqui
+
+# Herramientas CI/CD
+tools:
+  - name: "jenkins"
+    description: "Servidor de automatización"
+    port: 8080
+    
+  - name: "docker"
+    description: "Contenedores para aplicaciones"
+    
+  - name: "git"
+    description: "Control de versiones"
+    
+  - name: "github-actions-runner"
+    description: "Runner auto-hospedado para GitHub Actions"
+
+# Repositorios a monitorear
+repositories:
+  - name: "sample-web-app"
+    url: "https://github.com/curso-infra/sample-web-app.git"
+    deploy_target: "webserver_team"
+    
+  - name: "monitoring-configs"
+    url: "https://github.com/curso-infra/monitoring-configs.git"
+    deploy_target: "monitoring_team"
+
+# Pipeline stages
+pipeline_stages:
+  - name: "test"
+    description: "Ejecutar tests unitarios"
+    
+  - name: "security-scan"
+    description: "Escaneo de seguridad (integración con equipo security)"
+    
+  - name: "build"
+    description: "Construir aplicación"
+    
+  - name: "deploy"
+    description: "Desplegar a servidores web"
+
+# Integración con otros equipos
+integrations:
+  - team: webserver-ssl
+    purpose: "Deploy automático de aplicaciones"
+    method: "ssh + rsync"
+    
+  - team: security-lynis
+    purpose: "Security scanning en pipeline"
+    
+  - team: monitoring
+    purpose: "Métricas de pipeline y deployments"
+    
+  - team: traefik
+    purpose: "Actualización automática de routing"
+
+# Variables específicas
+variables:
+  jenkins_home: "/var/lib/jenkins"
+  enable_docker_in_docker: true
+  webhook_secret: "curso-infra-webhook"
+  deploy_strategy: "rolling"

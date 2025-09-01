@@ -1,0 +1,76 @@
+# ⚙️ EQUIPO TRAEFIK + ACME
+# Responsables del load balancer y certificados automáticos
+
+team_name: traefik-acme
+description: "Equipo especializado en load balancing y certificados automáticos"
+
+# Miembros del equipo (agregar nombres aquí)
+members:
+  - maria
+  - pedro
+  # - agregar_tu_nombre_aqui
+
+# Servicios principales
+services:
+  - name: "traefik"
+    description: "Load balancer y reverse proxy"
+    port: 80
+    admin_port: 8080
+    
+  - name: "acme"
+    description: "Certificados automáticos Let's Encrypt"
+    provider: "letsencrypt"
+
+# Puertos del load balancer
+ports:
+  - 80     # HTTP entrada
+  - 443    # HTTPS entrada  
+  - 8080   # Dashboard de Traefik
+  - 9090   # Métricas para Prometheus
+
+# Servicios a balancear (otros equipos)
+load_balanced_services:
+  - service: "webserver-ssl"
+    domain: "web.curso-infra.com"
+    backend_port: 80
+    
+  - service: "monitoring-grafana"
+    domain: "monitoring.curso-infra.com"
+    backend_port: 3000
+    
+  - service: "cicd-jenkins"
+    domain: "ci.curso-infra.com"
+    backend_port: 8080
+
+# Certificados automáticos
+acme_domains:
+  - "*.curso-infra.com"
+  - "web.curso-infra.com"
+  - "monitoring.curso-infra.com"
+  - "ci.curso-infra.com"
+  - "security.curso-infra.com"
+
+# Integración con otros equipos
+integrations:
+  - team: webserver-ssl
+    purpose: "Load balance traffic to web servers"
+    discovery_method: "docker_labels"
+    
+  - team: monitoring
+    purpose: "Export metrics and receive monitoring"
+    metrics_endpoint: "/metrics"
+    
+  - team: cicd
+    purpose: "Auto-discovery of new services"
+    webhook_url: "/traefik/webhook"
+    
+  - team: security-lynis
+    purpose: "Security scanning of proxy configuration"
+
+# Variables específicas
+variables:
+  acme_email: "admin@curso-infra.com"
+  enable_dashboard: true
+  log_level: "INFO"
+  enable_access_logs: true
+  certificate_resolver: "letsencrypt"

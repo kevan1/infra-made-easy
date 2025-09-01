@@ -1,0 +1,97 @@
+---
+# 🎯 ETAPA 1 - Webserver Básico
+# Playbook que TODOS los estudiantes deben ejecutar primero
+
+- name: "🎯 ETAPA 1 - Configurar Webserver Básico"
+  hosts: all
+  become: yes
+  vars:
+    student_name: "{{ lookup('env', 'STUDENT_NAME') | default('estudiante') }}"
+    
+  tasks:
+    - name: "📦 Actualizar paquetes del sistema"
+      apt:
+        update_cache: yes
+        upgrade: yes
+        
+    - name: "🔧 Instalar software básico"
+      apt:
+        name:
+          - nginx
+          - curl
+          - htop
+          - vim
+          - git
+        state: present
+        
+    - name: "🚀 Iniciar y habilitar Nginx"
+      systemd:
+        name: nginx
+        state: started
+        enabled: yes
+        
+    - name: "🔥 Crear página web personalizada"
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>🎯 Etapa 1 Completada - {{ student_name }}</title>
+              <style>
+                  body { 
+                      font-family: Arial, sans-serif; 
+                      text-align: center; 
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      margin: 0;
+                      padding: 50px;
+                  }
+                  .container { 
+                      background: rgba(255,255,255,0.1); 
+                      padding: 40px; 
+                      border-radius: 15px; 
+                      backdrop-filter: blur(10px);
+                  }
+                  h1 { font-size: 2.5em; margin-bottom: 20px; }
+                  .success { color: #4CAF50; font-size: 1.2em; }
+                  .info { margin: 20px 0; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🎉 ¡ETAPA 1 COMPLETADA!</h1>
+                  <p class="success">✅ Servidor configurado exitosamente</p>
+                  <div class="info">
+                      <p><strong>👤 Estudiante:</strong> {{ student_name }}</p>
+                      <p><strong>🌐 Servidor:</strong> {{ ansible_hostname }}</p>
+                      <p><strong>📅 Fecha:</strong> {{ ansible_date_time.date }}</p>
+                      <p><strong>⏰ Hora:</strong> {{ ansible_date_time.time }}</p>
+                  </div>
+                  <p>🚀 <strong>Siguiente paso:</strong> Únete a un equipo para la Etapa 2</p>
+                  <p>📈 Monitoreo | 🌍 Webserver+SSL | 🔒 Seguridad | 🔄 CI/CD | ⚙️ Traefik</p>
+              </div>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        
+    - name: "🔓 Configurar firewall básico"
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - "22"   # SSH
+        - "80"   # HTTP
+        - "443"  # HTTPS
+        
+    - name: "🎯 Mostrar información de éxito"
+      debug:
+        msg:
+          - "🎉 ¡ETAPA 1 COMPLETADA EXITOSAMENTE!"
+          - "👤 Estudiante: {{ student_name }}"
+          - "🌐 Tu servidor está disponible en: http://{{ ansible_default_ipv4.address }}"
+          - "🚀 Siguiente paso: Elige un equipo para la Etapa 2"
+          - "📖 Lee la documentación en docs/ETAPA2.md"

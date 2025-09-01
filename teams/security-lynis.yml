@@ -1,0 +1,67 @@
+# 🔒 EQUIPO SEGURIDAD (LYNIS)
+# Responsables de auditar y fortalecer la seguridad de toda la infraestructura
+
+team_name: security-lynis
+description: "Equipo especializado en auditoría y hardening de seguridad"
+
+# Miembros del equipo (agregar nombres aquí)
+members:
+  - pedro
+  # - agregar_tu_nombre_aqui
+
+# Herramientas de seguridad
+tools:
+  - name: "lynis"
+    description: "Auditor de seguridad para sistemas Unix"
+    version: "latest"
+    
+  - name: "fail2ban"
+    description: "Protección contra ataques de fuerza bruta"
+    
+  - name: "ufw"
+    description: "Firewall simplificado"
+    
+  - name: "chkrootkit"
+    description: "Detector de rootkits"
+    
+  - name: "rkhunter"
+    description: "Detector de malware"
+
+# Auditorías a realizar
+audit_targets:
+  - webserver_team_servers
+  - monitoring_team_servers
+  - cicd_team_servers
+  - traefik_team_servers
+
+# Reportes a generar
+reports:
+  - name: "security_assessment"
+    format: "html"
+    frequency: "daily"
+    
+  - name: "compliance_report"
+    format: "json"
+    frequency: "weekly"
+
+# Integración con otros equipos
+integrations:
+  - team: monitoring
+    purpose: "Enviar métricas de seguridad"
+    metrics_port: 9114
+    
+  - team: webserver-ssl
+    purpose: "Auditar configuración SSL"
+    
+  - team: cicd
+    purpose: "Integrar security checks en pipeline"
+    
+  - team: traefik
+    purpose: "Verificar configuración de proxy"
+
+# Variables específicas
+variables:
+  lynis_audit_frequency: "daily"
+  enable_automatic_hardening: false
+  security_level: "intermediate"
+  log_retention_days: 90

@@ -1,0 +1,170 @@
+---
+# 🌍 EQUIPO WEBSERVER + SSL - Setup Nginx con SSL y dominios
+- name: "🌍 ETAPA 2 - Configurar Webserver con SSL"
+  hosts: webserver_ssl_servers
+  become: yes
+  vars_files:
+    - ../../../teams/webserver-ssl.yml
+
+  tasks:
+    - name: "📦 Actualizar sistema"
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: "🔧 Instalar Nginx y Certbot"
+      apt:
+        name:
+          - nginx
+          - certbot
+          - python3-certbot-nginx
+          - nginx-extras
+        state: present
+
+    - name: "👥 Crear usuarios del equipo"
+      user:
+        name: "{{ item }}"
+        groups: sudo,www-data
+        shell: /bin/bash
+        create_home: yes
+      loop: "{{ members }}"
+
+    - name: "🔑 Configurar claves SSH"
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', '../../../users/' + item + '/id_rsa.pub') }}"
+      loop: "{{ members }}"
+      ignore_errors: yes
+
+    - name: "⚙️ Configurar Nginx optimizado"
+      copy:
+        content: |
+          server {
+              listen 80;
+              listen [::]:80;
+              server_name {{ domains | join(' ') }};
+              
+              # Redirect HTTP to HTTPS
+              return 301 https://$server_name$request_uri;
+          }
+          
+          server {
+              listen 443 ssl http2;
+              listen [::]:443 ssl http2;
+              server_name {{ domains | join(' ') }};
+              
+              root {{ variables.web_root | default('/var/www/html') }};
+              index index.html index.htm;
+              
+              # SSL Configuration (será configurado por Certbot)
+              # ssl_certificate /etc/letsencrypt/live/domain/fullchain.pem;
+              # ssl_certificate_key /etc/letsencrypt/live/domain/privkey.pem;
+              
+              # Security headers
+              add_header X-Frame-Options "SAMEORIGIN" always;
+              add_header X-Content-Type-Options "nosniff" always;
+              add_header X-XSS-Protection "1; mode=block" always;
+              
+              # Gzip compression
+              gzip on;
+              gzip_vary on;
+              gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+              
+              location / {
+                  try_files $uri $uri/ =404;
+              }
+              
+              # Metrics endpoint for monitoring team
+              location /metrics {
+                  stub_status on;
+                  access_log off;
+                  allow 127.0.0.1;
+                  # Add monitoring server IPs here
+                  deny all;
+              }
+          }
+        dest: /etc/nginx/sites-available/default
+      notify: restart nginx
+
+    - name: "🔥 Crear página web del equipo"
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>🌍 Webserver + SSL Team</title>
+              <style>
+                  body { 
+                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+                      color: white; margin: 0; padding: 40px;
+                  }
+                  .container { 
+                      background: rgba(255,255,255,0.15); 
+                      padding: 40px; border-radius: 20px; 
+                      backdrop-filter: blur(15px); text-align: center;
+                  }
+                  h1 { font-size: 3em; margin-bottom: 20px; }
+                  .features { display: flex; justify-content: space-around; margin: 30px 0; }
+                  .feature { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 10px; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🌍 Webserver + SSL Team</h1>
+                  <p>✨ Servidores web optimizados con SSL y dominios</p>
+                  
+                  <div class="features">
+                      <div class="feature">
+                          <h3>🔒 SSL/TLS</h3>
+                          <p>Certificados automáticos</p>
+                      </div>
+                      <div class="feature">
+                          <h3>🚀 HTTP/2</h3>
+                          <p>Performance optimizada</p>
+                      </div>
+                      <div class="feature">
+                          <h3>📊 Métricas</h3>
+                          <p>Integrado con monitoreo</p>
+                      </div>
+                  </div>
+                  
+                  <p><strong>👥 Miembros del equipo:</strong> {{ members | join(', ') }}</p>
+                  <p><strong>🌐 Dominios:</strong> {{ domains | join(', ') }}</p>
+                  <p><strong>📅 Configurado:</strong> {{ ansible_date_time.date }}</p>
+              </div>
+          </body>
+          </html>
+        dest: "{{ variables.web_root | default('/var/www/html') }}/index.html"
+        owner: www-data
+        group: www-data
+
+    - name: "🔓 Configurar firewall"
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop: "{{ ports }}"
+
+    - name: "🚀 Reiniciar Nginx"
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+
+    - name: "🌍 Mostrar información del equipo"
+      debug:
+        msg:
+          - "🎉 ¡EQUIPO WEBSERVER + SSL CONFIGURADO!"
+          - "👥 Miembros: {{ members | join(', ') }}"
+          - "🌐 Servidor: http://{{ ansible_default_ipv4.address }}"
+          - "🔒 SSL: Configurar dominios con Certbot"
+          - "📊 Métricas: http://{{ ansible_default_ipv4.address }}/metrics"
+          - "🔗 Listo para integrarse con otros equipos"
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
